@@ -12,12 +12,12 @@ const Footer = () => {
 
     const linkSections = [
         {
-            title: "PRODUCTS",
+            title: "OUR PRODUCTS",
             links: [
-                { text: "Earphones", path: '/', icon: null },
-                { text: "Headphones", path: '/', icon: null },
-                { text: "Smartphones", path: '/', icon: null },
-                { text: "Laptops", path: '/', icon: null },
+                { text: "Home Decor", path: '/', icon: null },
+                { text: "Pottery", path: '/', icon: null },
+                { text: "Art", path: '/', icon: null },
+                { text: "Handicraft", path: '/', icon: null },
             ]
         },
         {

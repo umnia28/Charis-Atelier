@@ -62,7 +62,7 @@ const Hero = () => {
   "
 >
   {/* Badge */}
-  <span className="bg-gradient-to-r from-blue-800 to-blue-200 px-4 py-1.5 rounded-full text-white text-sm sm:text-base font-[Garamond] font-semibold shadow-lg">
+  <span className="bg-gradient-to-r from-blue-800 via-pink-500 to-purple-800 px-4 py-1.5 rounded-full text-white text-sm sm:text-base font-[Garamond] font-semibold shadow-lg">
     The Perfect Gift!
   </span>
 
@@ -117,7 +117,7 @@ const Hero = () => {
               <p className='text-2xl'>Starting only at {currency} 499</p>
           </div>
 
-          <button className='bg-slate-900 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-black hover:scale-105 active:scale-95 transition'>
+          <button className='bg-gradient-to-r from-slate-900 via-slate-600 to-slate-500 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-black hover:scale-105 active:scale-95 transition'>
               EXPLORE THE GALLERY
           </button>
       </div>
