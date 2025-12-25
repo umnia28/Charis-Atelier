@@ -66,3 +66,5 @@ export async function loginUser(req, res) {
 
   res.json({ token, role: user.role, name: user.name });
 }
+
+{/*Terminal Shows Messages*/}
