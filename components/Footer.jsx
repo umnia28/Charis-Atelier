@@ -1,3 +1,4 @@
+import { MailMinusIcon, MapPinCheckIcon, PhoneCallIcon } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
@@ -21,20 +22,20 @@ const Footer = () => {
             ]
         },
         {
-            title: "WEBSITE?",
+            title: "MORE",
             links: [
                 { text: "Home", path: '/', icon: null },
                 { text: "Privacy Policy", path: '/', icon: null },
                 { text: "Become Plus Member", path: '/pricing', icon: null },
-                { text: "Create Your Store", path: '/create-store', icon: null },
+                { text: "Join Us", path: '/create-store', icon: null },
             ]
         },
         {
-            title: "CONTACT",
+            title: "CONTACT US",
             links: [
-                { text: "+1-212-456-7890", path: '/', icon: MailIcon },
-                { text: "contact@example.com", path: '/', icon: PhoneIcon },
-                { text: "794 Francisco, 94102", path: '/', icon: MapPinIcon }
+                { text: "+880 96** *** ***", path: '/', icon: PhoneCallIcon },
+                { text: "charisatelier@gmail.com", path: '/', icon: MailMinusIcon },
+                { text: "Dhaka-1000,Bangladesh", path: '/', icon: MapPinCheckIcon }
             ]
         }
     ];
@@ -52,9 +53,9 @@ const Footer = () => {
                 <div className="flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-slate-500/30 text-slate-500">
                     <div>
                         <Link href="/" className="text-4xl font-semibold text-slate-700">
-                            <span className="text-green-600">go</span>cart<span className="text-green-600 text-5xl leading-0">.</span>
+                            <span className="font-serif text-purple-800 text-5xl">Charis</span><span className="font-serif text-orange-600 text-3xl">Atelier</span><span className="text-blue-500 font-serif text-5xl leading-0"></span>
                         </Link>
-                        <p className="max-w-[410px] mt-6 text-sm">Welcome to gocart, your ultimate destination for the latest and smartest gadgets. From smartphones and smartwatches to essential accessories, we bring you the best in innovation — all in one place.</p>
+                        <p className="max-w-[410px] mt-6 text-sm">Welcome to Charis Atelier — uplifting tradition through artfully handcrafted designs, where heritage, creativity, and sophistication come together.</p>
                         <div className="flex items-center gap-3 mt-5">
                             {socialIcons.map((item, i) => (
                                 <Link href={item.link} key={i} className="flex items-center justify-center w-10 h-10 bg-slate-100 hover:scale-105 hover:border border-slate-300 transition rounded-full">
@@ -79,8 +80,8 @@ const Footer = () => {
                         ))}
                     </div>
                 </div>
-                <p className="py-4 text-sm text-slate-500">
-                    Copyright 2025 © gocart All Right Reserved.
+                <p className="py-4 text-sm text-slate-600">
+                    Copyright 2025 © CharisAtelier All Right Reserved.
                 </p>
             </div>
         </footer>

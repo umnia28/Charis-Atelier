@@ -5,8 +5,8 @@ import { ourSpecsData } from '@/assets/assets'
 const OurSpecs = () => {
 
     return (
-        <div className='px-6 my-20 max-w-6xl mx-auto'>
-            <Title visibleButton={false} title='Our Specifications' description="We offer top-tier service and convenience to ensure your shopping experience is smooth, secure and completely hassle-free." />
+        <div className='px-6 my-20 max-w-6xl mx-auto font-serif'>
+            <Title visibleButton={false} title='Why Shop On CharisAtelier?' description="At Charis Atelier, every piece tells a story. We celebrate timeless craftsmanship, honoring tradition while embracing modern elegance. From meticulously handcrafted creations to curated collections, shopping with us means bringing home art, culture, and sophistication." />
 
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 gap-y-10 mt-26'>
                 {
