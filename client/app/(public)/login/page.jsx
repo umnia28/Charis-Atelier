@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,46 +13,44 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
+        emailOrUsername: email,   // ✅ matches backend
         password
       });
 
-      // Save JWT token and user info
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('role', res.data.role);
-      localStorage.setItem('name', res.data.name);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
 
-      alert('Login successful!');
-      router.push('/'); // redirect after login
+      alert('Login successful ✅');
+      router.push('/'); 
     } catch (err) {
-      alert(err.response?.data || 'Login failed');
+      alert(err.response?.data?.message || 'Login failed');
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleLogin} className="flex flex-col gap-4 p-6 border rounded shadow-md">
-        <h2 className="text-2xl font-semibold">Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className="border px-3 py-2 rounded"
-        />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Login
-        </button>
-      </form>
-    </div>
+    <form onSubmit={handleLogin} className="flex flex-col gap-4 p-6 border rounded">
+      <h2 className="text-xl font-semibold">Login</h2>
+
+      <input
+        placeholder="Email or Username"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+        className="border px-3 py-2 rounded"
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        required
+        className="border px-3 py-2 rounded"
+      />
+
+      <button className="bg-blue-500 text-white py-2 rounded">
+        Login
+      </button>
+    </form>
   );
 }

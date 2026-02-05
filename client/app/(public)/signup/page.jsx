@@ -1,87 +1,66 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import axios from 'axios'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function SignupPage() {
-  const router = useRouter()
-
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [role, setRole] = useState('customer') // default role
+  const router = useRouter();
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
 
   const handleSignup = async (e) => {
-    e.preventDefault()
-
+    e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
-        name,
-        email,
-        password,
-        role
-      })
+      const res = await axios.post('http://localhost:5000/api/auth/register', form);
 
-      alert('Signup successful! Please login.')
-      router.push('/login')
+      // ✅ auto-login
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+
+      alert('Signup successful ✅');
+      router.push('/');
     } catch (err) {
-      alert(err.response?.data || 'Signup failed')
+      alert(err.response?.data?.message || 'Signup failed');
     }
-  }
+  };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form
-        onSubmit={handleSignup}
-        className="flex flex-col gap-4 p-6 border rounded shadow-md"
-      >
-        <h2 className="text-2xl font-semibold">Sign Up</h2>
+    <form onSubmit={handleSignup} className="flex flex-col gap-4 p-6 border rounded">
+      <h2 className="text-xl font-semibold">Sign Up</h2>
 
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
-          className="border px-3 py-2 rounded"
-        />
+      <input
+        placeholder="Username"
+        value={form.username}
+        onChange={e => setForm({ ...form, username: e.target.value })}
+        required
+        className="border px-3 py-2 rounded"
+      />
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          className="border px-3 py-2 rounded"
-        />
+      <input
+        type="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={e => setForm({ ...form, email: e.target.value })}
+        required
+        className="border px-3 py-2 rounded"
+      />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className="border px-3 py-2 rounded"
-        />
+      <input
+        type="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={e => setForm({ ...form, password: e.target.value })}
+        required
+        className="border px-3 py-2 rounded"
+      />
 
-        {/* Role selection for multivendor */}
-        <select
-          value={role}
-          onChange={e => setRole(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="customer">Customer</option>
-          <option value="vendor">Vendor</option>
-        </select>
-
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Sign Up
-        </button>
-      </form>
-    </div>
-  )
+      <button className="bg-green-500 text-white py-2 rounded">
+        Sign Up
+      </button>
+    </form>
+  );
 }
