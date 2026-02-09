@@ -27,12 +27,13 @@ router.get("/pending", verifyToken, requireRole("admin"), async (req, res) => {
       `
     );
 
-    res.json({ pending: rows });
+    return res.json({ sellers: rows }); // 
   } catch (err) {
     console.error("ADMIN LIST PENDING SELLERS ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /**
  * POST /api/admin/sellers/:userId/approve

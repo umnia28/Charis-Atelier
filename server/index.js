@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from "path";
 import authRoutes from './routes/auth.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import sellerRoutes from "./routes/seller.routes.js";
@@ -16,7 +17,9 @@ import adminSellersRoutes from "./routes/admin.sellers.routes.js";
 import sellerProductsRoutes from "./routes/seller.products.routes.js";
 import adminPromosRoutes from "./routes/admin.promos.routes.js";
 import sellerStoreRoutes from "./routes/seller.store.routes.js";
-
+import ordersRoutes from "./routes/orders.routes.js";
+import publicProductsRoutes from "./routes/products.public.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 
 
@@ -32,6 +35,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -47,7 +52,10 @@ app.use("/api/seller", sellerApplyRoutes);
 app.use("/api/admin/sellers", adminSellersRoutes);
 app.use("/api/seller/products", sellerProductsRoutes);
 app.use("/api/admin/promos", adminPromosRoutes);
-app.use("/api/seller/store", sellerStoreRoutes);
+app.use("/api/seller", sellerStoreRoutes);
+app.use("/api/orders", ordersRoutes);
+app.use("/api/public/products", publicProductsRoutes);
+app.use("/api/upload", uploadRoutes);
 
 
 

@@ -1,124 +1,138 @@
-'use client';
+/*'use client';
 
 import { useEffect, useState } from "react";
 import RequireRole from "@/components/RequireRole";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
+import OrdersAreaChart from "@/components/OrdersAreaChart";
+import {
+  CircleDollarSignIcon,
+  ShoppingBasketIcon,
+  TagsIcon,
+  BoxesIcon,
+} from "lucide-react";
 
-const API = "http://localhost:5000";
+import { dummySellerDashboardData } from "@/assets/assets";
 
-export default function SellerStorePage() {
-  const router = useRouter();
+export default function SellerDashboard() {
+  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "৳";
 
-  const [store, setStore] = useState(null);
-  const [form, setForm] = useState({ store_name: "", ref_no: "" });
   const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    products: 0,
+    revenue: 0,
+    orders: 0,
+    stock: 0,
+    allOrders: [],
+  });
 
-  const load = async () => {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API}/api/seller/store`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Failed to load store");
-    setStore(data.store);
-  };
+  const cards = [
+    { title: "Products", value: dashboardData.products, icon: ShoppingBasketIcon },
+    { title: "Revenue", value: currency + dashboardData.revenue, icon: CircleDollarSignIcon },
+    { title: "Orders", value: dashboardData.orders, icon: TagsIcon },
+    { title: "Stock Units", value: dashboardData.stock, icon: BoxesIcon },
+  ];
 
   useEffect(() => {
-    setLoading(true);
-    load()
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    setDashboardData(dummySellerDashboardData);
+    setLoading(false);
   }, []);
 
-  const create = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    const payload = {
-      store_name: form.store_name.trim(),
-      ref_no: form.ref_no.trim() ? form.ref_no.trim() : null,
-    };
-
-    const res = await fetch(`${API}/api/seller/store`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Create failed");
-
-    toast.success("Store created ✅");
-    setStore(data.store);
-
-    // helps other pages/components read updated state instantly
-    router.refresh();
-  };
+  if (loading) return <Loading />;
 
   return (
     <RequireRole allowedRoles={["seller"]}>
-      <div className="p-6 max-w-xl mx-auto space-y-5">
-        <h1 className="text-2xl font-semibold">My Store</h1>
+      <div className="text-slate-500 p-6">
+        <h1 className="text-2xl">
+          Seller <span className="text-slate-800 font-medium">Dashboard</span>
+        </h1>
 
-        {loading ? (
-          <p className="text-slate-500">Loading...</p>
-        ) : store ? (
-          <div className="border rounded-xl p-4">
-            <p className="font-medium text-lg">{store.store_name}</p>
-            <p className="text-sm text-slate-500">Store ID: {store.store_id}</p>
-            <p className="text-sm text-slate-500">Status: {store.store_status}</p>
-            {store.ref_no && <p className="text-sm text-slate-500">Ref: {store.ref_no}</p>}
-            <p className="text-sm text-slate-500">
-              Created: {new Date(store.created_at).toLocaleString()}
-            </p>
+        // Cards 
+        <div className="flex flex-wrap gap-5 my-10 mt-4">
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-10 border border-slate-200 p-3 px-6 rounded-lg"
+            >
+              <div className="flex flex-col gap-3 text-xs">
+                <p>{card.title}</p>
+                <b className="text-2xl font-medium text-slate-700">{card.value}</b>
+              </div>
+              <card.icon className="w-11 h-11 p-2.5 text-slate-400 bg-slate-100 rounded-full" />
+            </div>
+          ))}
+        </div>
 
-            <p className="mt-4 text-sm text-slate-700">
-              ✅ Use this Store ID when creating products.
-            </p>
-          </div>
-        ) : (
-          <form
-            onSubmit={(e) =>
-              toast.promise(create(e), {
-                loading: "Creating...",
-                success: "Store created ✅",
-                error: (err) => err.message || "Create failed",
-              })
-            }
-            className="border rounded-xl p-4 grid gap-3"
-          >
-            <p className="font-medium">Create your store</p>
-
-            <input
-              className="border p-2 rounded"
-              placeholder="Store name"
-              value={form.store_name}
-              onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-              required
-            />
-
-            <input
-              className="border p-2 rounded"
-              placeholder="Ref No (optional, must be unique)"
-              value={form.ref_no}
-              onChange={(e) => setForm({ ...form, ref_no: e.target.value })}
-            />
-
-            <button className="bg-slate-800 text-white py-2 rounded">
-              Create Store
-            </button>
-
-            <p className="text-xs text-slate-500">
-              Note: You must be <b>approved</b> by admin before creating a store.
-            </p>
-          </form>
-        )}
+        <OrdersAreaChart allOrders={dashboardData.allOrders} />
       </div>
     </RequireRole>
+  );
+}
+*/
+
+'use client';
+
+import { useEffect, useState } from "react";
+import Loading from "@/components/Loading";
+import OrdersAreaChart from "@/components/OrdersAreaChart";
+import {
+  CircleDollarSignIcon,
+  ShoppingBasketIcon,
+  TagsIcon,
+  StoreIcon,
+} from "lucide-react";
+import { dummySellerDashboardData } from "@/assets/assets";
+
+export default function SellerDashboard() {
+  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "৳";
+
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    products: 0,
+    revenue: 0,
+    orders: 0,
+    stores: 0,
+    allOrders: [],
+  });
+
+  const dashboardCardsData = [
+    { title: "Total Products", value: dashboardData.products, icon: ShoppingBasketIcon },
+    { title: "Total Revenue", value: currency + dashboardData.revenue, icon: CircleDollarSignIcon },
+    { title: "Total Orders", value: dashboardData.orders, icon: TagsIcon },
+    { title: "Total Stores", value: dashboardData.stores, icon: StoreIcon },
+  ];
+
+  useEffect(() => {
+    setDashboardData(dummySellerDashboardData); // later replace with real API
+    setLoading(false);
+  }, []);
+
+  if (loading) return <Loading />;
+
+  return (
+    <div className="text-slate-500">
+      <h1 className="text-2xl">
+        Seller <span className="text-slate-800 font-medium">Dashboard</span>
+      </h1>
+
+      <div className="flex flex-wrap gap-5 my-10 mt-4">
+        {dashboardCardsData.map((card, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-10 border border-slate-200 p-3 px-6 rounded-lg"
+          >
+            <div className="flex flex-col gap-3 text-xs">
+              <p>{card.title}</p>
+              <b className="text-2xl font-medium text-slate-700">{card.value}</b>
+            </div>
+            <card.icon
+              size={50}
+              className="w-11 h-11 p-2.5 text-slate-400 bg-slate-100 rounded-full"
+            />
+          </div>
+        ))}
+      </div>
+
+      <OrdersAreaChart allOrders={dashboardData.allOrders} />
+    </div>
   );
 }

@@ -1,20 +1,16 @@
 'use client';
+
 import { useEffect, useState } from "react";
-import RequireRole from "@/components/RequireRole";
 import toast from "react-hot-toast";
+import ProductModal from "@/components/seller/ProductModal";
 
 const API = "http://localhost:5000";
 
 export default function SellerProductsPage() {
+  const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [form, setForm] = useState({
-    store_id: "",
-    product_name: "",
-    price: "",
-    product_count: 0,
-    discount: 0,
-    images: [""],
-  });
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
 
   const load = async () => {
     const token = localStorage.getItem("token");
@@ -22,126 +18,133 @@ export default function SellerProductsPage() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Failed");
+    if (!res.ok) throw new Error(data.message || "Failed to load products");
     setProducts(data.products || []);
   };
 
   useEffect(() => {
-    load().catch(() => {});
+    setLoading(true);
+    load().catch((e) => toast.error(e.message)).finally(() => setLoading(false));
   }, []);
 
-  const addProduct = async (e) => {
-    e.preventDefault();
+  const create = async (payload) => {
     const token = localStorage.getItem("token");
-
-    const payload = {
-      ...form,
-      store_id: Number(form.store_id),
-      price: Number(form.price),
-      product_count: Number(form.product_count || 0),
-      discount: Number(form.discount || 0),
-      images: form.images.filter((x) => x && x.trim().length > 5),
-    };
-
     const res = await fetch(`${API}/api/seller/products`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(payload),
     });
-
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Create failed");
-
-    toast.success("Product created ✅");
-    setForm({ store_id: "", product_name: "", price: "", product_count: 0, discount: 0, images: [""] });
     await load();
+    setOpen(false);
   };
 
-  const del = async (id) => {
+  const update = async (payload) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API}/api/seller/products/${id}`, {
+    const res = await fetch(`${API}/api/seller/products/${editing.product_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Update failed");
+    await load();
+    setEditing(null);
+    setOpen(false);
+  };
+
+  const del = async (product_id) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API}/api/seller/products/${product_id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Delete failed");
-    toast.success("Deleted ✅");
-    await load();
+    setProducts((prev) => prev.filter((p) => p.product_id !== product_id));
   };
 
   return (
-    <RequireRole allowedRoles={["seller"]}>
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <h1 className="text-2xl font-semibold">Seller Products</h1>
+    <div className="text-slate-700">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Products</h1>
 
-        <form onSubmit={(e)=>toast.promise(addProduct(e),{loading:"Creating..."})} className="border rounded-xl p-4 grid gap-3">
-          <p className="font-medium">Add Product</p>
-
-          <input className="border p-2 rounded" placeholder="Store ID (must be yours)"
-            value={form.store_id} onChange={(e)=>setForm({...form, store_id:e.target.value})} required />
-
-          <input className="border p-2 rounded" placeholder="Product name"
-            value={form.product_name} onChange={(e)=>setForm({...form, product_name:e.target.value})} required />
-
-          <input className="border p-2 rounded" placeholder="Price"
-            value={form.price} onChange={(e)=>setForm({...form, price:e.target.value})} required />
-
-          <div className="grid grid-cols-2 gap-3">
-            <input className="border p-2 rounded" placeholder="Base stock"
-              value={form.product_count} onChange={(e)=>setForm({...form, product_count:e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Discount"
-              value={form.discount} onChange={(e)=>setForm({...form, discount:e.target.value})} />
-          </div>
-
-          <div className="grid gap-2">
-            <p className="text-sm text-slate-500">Image URLs (optional)</p>
-            {form.images.map((url, idx) => (
-              <input
-                key={idx}
-                className="border p-2 rounded"
-                placeholder={`Image URL ${idx + 1}`}
-                value={url}
-                onChange={(e) => {
-                  const copy = [...form.images];
-                  copy[idx] = e.target.value;
-                  setForm({ ...form, images: copy });
-                }}
-              />
-            ))}
-            <button
-              type="button"
-              className="text-sm underline text-slate-700 w-fit"
-              onClick={() => setForm({ ...form, images: [...form.images, ""] })}
-            >
-              + Add another image
-            </button>
-          </div>
-
-          <button className="bg-slate-800 text-white py-2 rounded">Create</button>
-        </form>
-
-        <div className="space-y-3">
-          {products.map((p) => (
-            <div key={p.product_id} className="border rounded-xl p-4 flex justify-between">
-              <div>
-                <p className="font-medium">{p.product_name}</p>
-                <p className="text-sm text-slate-500">
-                  Store: {p.store_name} • Price: ৳{Number(p.price).toLocaleString()} • Stock: {p.product_count}
-                </p>
-              </div>
-              <button
-                onClick={() => toast.promise(del(p.product_id), { loading: "Deleting..." })}
-                className="px-3 py-1 rounded bg-red-600 text-white"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
+        <button
+          onClick={() => { setEditing(null); setOpen(true); }}
+          className="bg-slate-800 text-white px-4 py-2 rounded"
+        >
+          + Add Product
+        </button>
       </div>
-    </RequireRole>
+
+      {loading ? (
+        <p className="text-slate-500 mt-6">Loading...</p>
+      ) : products.length === 0 ? (
+        <p className="text-slate-500 mt-6">No products yet.</p>
+      ) : (
+        <div className="mt-6 overflow-x-auto border rounded-xl">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <th className="p-3 text-left">Product</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">Discount</th>
+                <th className="p-3">Stock</th>
+                <th className="p-3">Status</th>
+                <th className="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {products.map((p) => (
+                <tr key={p.product_id} className="border-t">
+                  <td className="p-3">
+                    <div className="font-medium">{p.product_name}</div>
+                    <div className="text-xs text-slate-500">
+                      ID: {p.product_id} • Store: {p.store_name} (#{p.store_id})
+                    </div>
+                  </td>
+
+                  <td className="p-3 text-center">৳{Number(p.price).toLocaleString()}</td>
+                  <td className="p-3 text-center">৳{Number(p.discount).toLocaleString()}</td>
+                  <td className="p-3 text-center">{p.product_count}</td>
+                  <td className="p-3 text-center">{p.status}</td>
+
+                  <td className="p-3 text-right space-x-2">
+                    <button
+                      onClick={() => { setEditing(p); setOpen(true); }}
+                      className="px-3 py-1 rounded border hover:bg-slate-50"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => toast.promise(del(p.product_id), { loading: "Deleting..." })}
+                      className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+        </div>
+      )}
+
+      <ProductModal
+        open={open}
+        onClose={() => setOpen(false)}
+        initial={editing}
+        onSubmit={(payload) =>
+          toast.promise(editing ? update(payload) : create(payload), {
+            loading: editing ? "Updating..." : "Creating...",
+            success: "Saved ✅",
+            error: (e) => e.message || "Failed",
+          })
+        }
+      />
+    </div>
   );
 }
